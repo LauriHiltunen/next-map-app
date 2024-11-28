@@ -1,0 +1,33 @@
+.container {
+    width:300px
+}
+.container > h3 {
+    margin:0.5em;
+}
+.feedbacks {
+    display:grid;
+    width:100%
+}
+.feedbacks > div {
+    padding:0.5em;
+}
+.feedbacks > div > input {
+    border:1px solid #a3a3a3;
+    padding:0.5em;
+    border-radius: 3px;
+    width:100%
+}
+.feedbacks > div > textarea {
+    background-color: #eaeaea;
+    border:1px solid #a3a3a3;
+    padding:0.5em;
+    border-radius: 3px;
+    width:100%;
+}
+.feedbacks > div > button {
+    background-color: #000;
+    color:white;
+    padding:0.5em;
+    border-radius: 3px;
+    width:100%
+}

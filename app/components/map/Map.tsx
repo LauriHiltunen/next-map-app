@@ -1,7 +1,7 @@
 'use client'
 // app/components/Map.tsx
 import React, {useState } from 'react'
-import { MapContainer, Marker, TileLayer, Popup, useMapEvents } from "react-leaflet"
+import { MapContainer, Marker, TileLayer, Popup, useMapEvents, Tooltip } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import "leaflet-defaulticon-compatibility"
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css"
@@ -19,13 +19,17 @@ function LocationMarker() {
     // useState hookilla alustetaan tila, joka sisältää kaikki markkerit
     // Alkuarvo on tyhjä taulukko. Taulukkoon tallennetaan MyMarker tyyppisiä tietoja
     const [markers, setMarkers] = useState<MyMarker[]>([])
+    const [popUpOpen, setPopUpOpen] = useState(false)
 
     useMapEvents({
         click(e) {
-            // Kun karttaa klikataan, haetaan klikatun kohdan sijainti.
-            const newMarker = {latlng:e.latlng,text:"",originalText:""}
-            setMarkers([...markers,newMarker])
-        }
+            console.log(e.latlng)
+            if (!popUpOpen) {
+                setMarkers([...markers,{latlng:e.latlng,text:"",originalText:""}])
+            }
+        },
+        popupopen() {setPopUpOpen(true)},
+        popupclose() {setPopUpOpen(false)}
     })
 
     // Päivittää markerin tekstiä sen indeksin perusteella.
@@ -49,7 +53,19 @@ function LocationMarker() {
         setMarkers(updatedMarkers)
     }
 
+    // Poistaa markerin
+    const removeMarker = (idx:number) => {
+        if (markers.splice(idx,1).length > 0){
+            setMarkers([...markers])
+        }
+    }
+
+    function test(test:string) {
+        console.log(test)
+        return test
+    }
     // Renderöi kaikki markerit kartalle ja sisältää kunkin markerin popup ikkunan tekstin muokkaamista varten
+    console.log("render")
     return (
         <>
         {markers.map((marker, idx) => (
@@ -60,9 +76,13 @@ function LocationMarker() {
                         <div>
                             <button onClick={() => saveText(idx)}>Tallenna</button>
                             <button onClick={() => undoText(idx)}>Kumoa</button>
+                            <button onClick={() => removeMarker(idx)}>Poista</button>
                         </div>
                     </div>
                 </Popup>
+                <Tooltip key={idx}>
+                    <p>{marker.text}</p>
+                </Tooltip>
             </Marker>
     ))}
     </>
