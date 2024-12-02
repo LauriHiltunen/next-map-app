@@ -1,3 +1,8 @@
+## About
+
+In this app, you can place markers on a map and in the future I want to add possibility to store them into a database. After markers are stored in the database the user can return to it's session by entering uuid ínto url-address.
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
