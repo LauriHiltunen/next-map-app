@@ -12,8 +12,13 @@ export interface ILocations {
     uid:string
 }
 
-var Locations = {
-    // Sijainnit linkitetään uid-tunnisteen avulla
+const Locations = {
+    /**
+     * Adds a new marker
+     * 
+     * @param location Marker to be added
+     * @returns Promise()
+     */
     add: async function (location:ILocation) {
         let result
         let db = null
@@ -40,39 +45,33 @@ var Locations = {
         }
         return result
     },
-    // Poistaa sijainnin
+    /**
+     * Deletes a marker from database
+     * 
+     * @param location the marker data
+     * @param index the marker index
+     * @returns 
+     */
     remove: async function(location:ILocation, index:number) {
-        let result
+        let result = false
         let db = null
         try {
             db = await pool.getConnection()
 
             // Haetaan kaikki markkerit listaan
 
-            const selectAll = "SELECT * FROM sijainti"
+            const selectAll = "SELECT * FROM sijainti WHERE sijainti.sijainnit_uid = ?"
 
-            const records = await db.query(selectAll)
+            const records = await db.query(selectAll, [location.uid])
 
             if (Object.values(records[0]).length) {
                 const data = <ILocations[]>records[0]
 
                 if(data.length > index) {
-                    let id = null
-
-                    // Tähän binary search
-                    for(let i = 0;i<data.length;i++) {
-                        if(index === i) {
-                            id = data[i]
-                            break
-                        }
-                    }
-
-                    const query = 'DELETE from sijainti WHERE id = :id'
-                    await db.query(query, {})
+                    const id = data[index].id
+                    const query = 'DELETE from sijainti WHERE id = ?'
+                    await db.query(query, [id])
                     result = true
-                }
-                else {
-                    result = false
                 }
             }
         }
@@ -87,7 +86,11 @@ var Locations = {
         }
         return result
     },
-    // Palauttaa uid 
+    /**
+     * Creates a new record for storing markers
+     * 
+     * @returns uuid 
+     */
     newLocationsRecord:async function () {
         let result
         let db = null
@@ -117,7 +120,12 @@ var Locations = {
         }
         return result
     } ,
-    // Tarkistaa onko objekti kelvollinen
+    /**
+     * Validates a marker object
+     * 
+     * @param object The marker object to be validated
+     * @returns boolean
+     */
     validateObject: function (object:ILocation) {
         return object && object.uid && object.lat && object.lng  && typeof object.uid === "string" && typeof object.lat === "number" && typeof object.lng === "number";
     }

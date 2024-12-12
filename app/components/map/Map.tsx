@@ -60,12 +60,7 @@ function LocationMarker() {
         }
     }
 
-    function test(test:string) {
-        console.log(test)
-        return test
-    }
     // Renderöi kaikki markerit kartalle ja sisältää kunkin markerin popup ikkunan tekstin muokkaamista varten
-    console.log("render")
     return (
         <>
         {markers.map((marker, idx) => (

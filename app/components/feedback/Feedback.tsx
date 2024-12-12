@@ -1,6 +1,7 @@
 'use client'
-import { useState } from 'react'
+import { useState, FormEvent } from 'react'
 import styles from './feedback.module.css'
+import axios from 'axios'
 
 const Palaute = () => {
   const [name,setName] = useState("")
@@ -11,10 +12,22 @@ const Palaute = () => {
   const [city,setCity] = useState("")
   const [feedback,setFeedback] = useState("")
 
+  const [feedbackSent, setFeedbackSent] = useState(false)
+
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const response = await axios.post("/api/feedback", {name:name,phone:phone,email:email,address:address,postal_code:postal_code,city:city,feedback:feedback})
+
+    if(response.status === 200) {
+        console.log(await response.data)
+
+      setFeedbackSent(true)
+    }
+  }
   return (
     <div className={styles.container}>
       <h3>Anna meille palautetta</h3>
-      <form className={styles.feedbacks}>
+      <form className={styles.feedbacks} onSubmit={onSubmit}>
         <div>
           <input type='text' placeholder='Nimi' value={name} onChange={(event) => {setName(event.target.value)}} />
         </div>
@@ -36,10 +49,22 @@ const Palaute = () => {
         <div>
           <textarea placeholder='Kirjoita palautteesi tähän' value={feedback} onChange={(event) => {setFeedback(event.target.value)}} />
         </div>
+        {!feedbackSent && (
         <div>
-          <button type='submit'>Lähetä</button>
+          <button type='submit' >Lähetä</button>
         </div>
+      )}
+      {feedbackSent && (
+        <div>
+          <button type='submit' className={styles.disabledFeedbackButton} disabled>Lähetä</button>
+        </div>
+      )}
       </form>
+      
+      {feedbackSent && (
+        <p className={styles.feedbackSent}>Palaute lähetetty</p>
+      )}
+      
     </div>
   )
 }

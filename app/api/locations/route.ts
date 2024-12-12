@@ -1,13 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import Locations from "@/shared/libs/Locations";
 
+
+export async function GET() {
+    try {
+        const uid = await Locations.newLocationsRecord()
+        return NextResponse.json({uid:uid}, { status: 200 })
+    }
+    catch (error) {
+        const statusCode = 500
+
+        return NextResponse.json({
+            error: error
+        }, { status: statusCode })
+    }
+}
 export async function POST(request:NextRequest) {
     try {
-        let newLocation = await request.json()
+        const newLocation = await request.json()
         if (!(Locations.validateObject(newLocation))) {
             throw (new SyntaxError)
         }
-        let newRecord = await Locations.add(newLocation)
+        const newRecord = await Locations.add(newLocation)
         if(!newRecord) {
             throw (new Error())
         }
@@ -26,13 +40,14 @@ export async function POST(request:NextRequest) {
 
 export async function DELETE(request:NextRequest) {
     try {
-        let location = await request.json()
-        if (!(Locations.validateObject(location)) || !location['index'] || typeof location['index'] !== "number" || location['index'] < 0) {
+        const location = await request.json()
+        console.log(!(location?.index > -1) , location)
+        if (!(Locations.validateObject(location)) || !(location?.index > -1)) {
             throw (new SyntaxError)
         }
-        let record = await Locations.remove(location, location['index'])
+        const record = await Locations.remove(location, location.index)
         if(!record) {
-            throw (new Error())
+            throw (new Error)
         }
         console.log(await record)
         return NextResponse.json({}, { status: 200 })
